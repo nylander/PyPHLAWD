@@ -5,6 +5,7 @@ temp*
 mafft.out
 log*
 subMSAtable
+*.swp
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -104,3 +105,6 @@ _site
 
 # private
 private/
+
+# apptainer image file
+apptainer/*.sif

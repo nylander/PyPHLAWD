@@ -1,0 +1,104 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%labels
+    Author Johan Nylander
+    Version v1
+
+%help
+    This Apptainer (Singularity) definition file installs a set of Debian/Ubuntu
+    packages requred for PyPHLAWD, phyx, and phlawd_db_maker. It also installs pip
+    fallbacks for a couple of Python packages in case the apt packages are not
+    available on the base image.
+
+%environment
+    export DEBIAN_FRONTEND=noninteractive
+    export PYTHONUNBUFFERED=1
+    PATH=/usr/local/PyPHLAWD/src:/usr/local/bin:/usr/bin:/bin:$PATH
+    export PATH
+
+%post
+    # Basic setup
+    apt-get update -y && apt-get upgrade -y
+
+    # Ensure python3 exists and get pip & build tools for potential source installs
+    apt-get install -y --no-install-recommends \
+        python3 \
+        python3-pip \
+        python3-dev \
+        build-essential \
+        ca-certificates \
+        wget \
+        curl
+
+    # Install the requested apt packages (keep --no-install-recommends to keep image small)
+    apt-get install -y --no-install-recommends \
+        autoconf \
+        automake \
+        autotools-dev \
+        cmake \
+        cython3 \
+        fasttree \
+        git \
+        libarmadillo-dev \
+        libatlas-cpp-0.6-dev \
+        liblapack-dev \
+        libnlopt-dev \
+        libnlopt-cxx-dev \
+        libnlopt0 \
+        libsqlite3-dev \
+        libtool \
+        mafft \
+        mcl \
+        ncbi-blast+ \
+        python3-clint \
+        python3-networkx || true
+
+    # Some distros may not provide python3-clint via apt; install with pip as fallback.
+    python3 - <<'PY'
+import subprocess, sys
+def safe_install(pkg):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "--no-cache-dir", pkg])
+# check clint
+try:
+    import clint  # noqa: F401
+except Exception:
+    safe_install("clint")
+
+PY
+
+    # Clean up apt caches to reduce image size
+    apt-get clean
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives
+
+    # Install phyx
+    cd /usr/local
+    git clone https://github.com/FePhyFoFum/phyx.git
+    cd phyx/src
+    autoconf
+    ./configure
+    make
+    make check
+    make install
+
+    # Install PyPHLAWD
+    cd /usr/local
+    git clone https://github.com/FePhyFoFum/PyPHLAWD.git
+    cd PyPHLAWD/src
+    bash compile_cython.sh
+    chmod +x /usr/local/PyPHLAWD/src/*.py
+    # PyPHLAWD conf.py
+    sed 's#DI = "~/apps/PyPHLAWD/src/"#"DI = /usr/local/PyPHLAWD/src/"#' conf.py
+
+    # Install phlawd_db_maker
+    # Want to create db for division INV: phlawd_db_maker inv /path/to/inv.db
+    cd /usr/local
+    git clone https://github.com/blackrim/phlawd_db_maker.git
+    cd phlawd_db_maker
+    cmake .
+    make
+    cp phlawd_db_maker /usr/local/bin/phlawd_db_maker
+
+%runscript
+    echo "Provides phlawd_db_maker, phyx and PyPHLAWD scripts (in /usr/local/PyPHLAWD/src)"
+    exec /bin/bash "$@"
