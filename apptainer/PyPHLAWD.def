@@ -51,10 +51,11 @@ From: ubuntu:22.04
         mafft \
         mcl \
         ncbi-blast+ \
-        python3-clint \
-        python3-networkx || true
+        python3-clint || true
 
-    # Some distros may not provide python3-clint via apt; install with pip as fallback.
+        # python3-networkx
+
+    # Some distros may not provide python3-clint via apt; install with pip3 as fallback.
     python3 - <<'PY'
 import subprocess, sys
 def safe_install(pkg):
@@ -64,6 +65,12 @@ try:
     import clint  # noqa: F401
 except Exception:
     safe_install("clint")
+
+# check networkx
+try:
+    import networkx
+except Exception:
+    safe_install("networkx")
 
 PY
 
