@@ -3,7 +3,7 @@ From: ubuntu:22.04
 
 %labels
     Author Johan Nylander
-    Version v1
+    Version v0.2
 
 %help
     This Apptainer (Singularity) definition file installs a set of Debian/Ubuntu
