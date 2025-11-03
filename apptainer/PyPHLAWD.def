@@ -94,8 +94,9 @@ PY
     cd PyPHLAWD/src
     bash compile_cython.sh
     chmod +x /usr/local/PyPHLAWD/src/*.py
-    # PyPHLAWD conf.py
-    sed 's#DI = "~/apps/PyPHLAWD/src/"#"DI = /usr/local/PyPHLAWD/src/"#' conf.py
+
+    # Fix path in PyPHLAWD conf.py
+    sed -i 's#DI = "~/apps/PyPHLAWD/src/"#DI = "/usr/local/PyPHLAWD/src/"#' conf.py
 
     # Install phlawd_db_maker
     # Want to create db for division INV: phlawd_db_maker inv /path/to/inv.db
