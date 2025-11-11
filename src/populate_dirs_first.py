@@ -9,16 +9,23 @@ if __name__ == "__main__":
     if len(sys.argv) != 5 and len(sys.argv) != 6:
         print("python "+sys.argv[0]+" tree dir DB gzfileloc [limitlist]")
         sys.exit(0)
-    
+
     tree = next(tree_reader.read_tree_file_iter(sys.argv[1]))
     dirl = sys.argv[2]
+
     if dirl[-1] != "/":
         dirl = dirl + "/"
+
     DB = sys.argv[3]
-    
+
     gzfileloc = sys.argv[4]
 
+    if not os.path.isdir(gzfileloc):
+        print(f"ERROR: folder '{gzfileloc}' does not exist")
+        sys.exit(1)
+
     taxalist = None
+
     if len(sys.argv) == 6:
         taxalistf = open(sys.argv[5],"r")
         taxalist = set()
@@ -26,6 +33,7 @@ if __name__ == "__main__":
             taxalist.add(i.strip())
         taxalistf.close()
     didntmake = set()
+
     for i in tree.iternodes():
         if "unclassified" in i.label:
             didntmake.add(i)
@@ -42,6 +50,6 @@ if __name__ == "__main__":
         tid = orig.split("_")[-1]
         dirr = i.label
         if len(i.children) == 0:
-            mfid(tid,DB,dirl+dirr+"/"+orig+".fas",dirl+dirr+"/"+orig+".table",gzfileloc,True,limitlist = taxalist) 
+            mfid(tid, DB, dirl+dirr+"/"+orig+".fas", dirl+dirr+"/"+orig+".table", gzfileloc, True, limitlist=taxalist)
         else:
-            mfid_in(tid,DB,dirl+dirr+"/"+orig+".fas",dirl+dirr+"/"+orig+".table",gzfileloc,True,limitlist = taxalist) 
+            mfid_in(tid, DB, dirl+dirr+"/"+orig+".fas", dirl+dirr+"/"+orig+".table", gzfileloc, True, limitlist=taxalist)
