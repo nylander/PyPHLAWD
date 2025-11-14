@@ -38,29 +38,26 @@ def generate_argparser ():
                         type=str, nargs=1, required=False,
                         help=("Taxon list file.")
                         )
-    return parser
+    return parser.parse_args()
 
 if __name__ == "__main__":
-    p = generate_argparser()
-    args = p.parse_args(sys.argv[1:])
+    args = generate_argparser()
 
     print(colored.blue("STARTING PYPHLAWD "+emoticons.get_ran_emot("excited")))
     start = datetime.now()
 
     # Output directory (must exists!)
-    dirl = args.outdir[0]
+    dirl = args.outdir
+    dirl.rstrip('/')
     if not os.path.isdir(dirl):
         print(f"Error: '{dirl}' does not exist")
         sys.exit(1)
 
-    if dirl[-1] == "/":
-        dirl = dirl[:-1]
-
     # Taxon string
-    taxon = args.taxon[0]
+    taxon = args.taxon
 
     # Location of database file
-    db = args.database[0]
+    db = args.database
     if not os.path.isfile(db):
         print(f"Error: '{db}' does not exist")
         sys.exit(1)
@@ -68,25 +65,23 @@ if __name__ == "__main__":
     # This will be used to limit the taxa
     TAXALISTF = None
     if args.tlistf is not None:
-        TAXALISTF = args.tlistf[0]
+        TAXALISTF = args.tlistf
         print(colored.yellow("LIMITING TO TAXA IN"), TAXALISTF)
 
     # Log file
-    logfile = args.logfile[0]
-    if logfile[-len(".md.gz"):] != ".md.gz":
+    logfile = args.logfile
+    if not logfile.endswith(".md.gz"):
         logfile += ".md.gz"
 
     # Folder with ?????
-    gzfiles = args.seqgzfolder[0]
+    gzfiles = args.seqgzfolder
+    gzfiles.rstrip('/')
     if not os.path.isdir(gzfiles):
         print(f"Error: '{gzfiles}' does not exist")
         sys.exit(1)
 
-    if gzfiles[-1] != "/":
-        gzfiles += "/"
-
     # run get_ncbi_tax_tree_no_species.py
-    print(colored.yellow("MAKING TREE"),taxon,colored.yellow(emoticons.get_ran_emot("excited")))
+    print(colored.yellow("MAKING TREE"), taxon, colored.yellow(emoticons.get_ran_emot("excited")))
     tname = dirl+"/"+taxon+".tre"
 
     if TAXALISTF is not None:
@@ -104,7 +99,7 @@ if __name__ == "__main__":
     os.system(cmd)
 
     # run populate_dirs_first.py
-    print(colored.yellow("POPULATING DIRS"), dirl,colored.yellow(emoticons.get_ran_emot("excited")))
+    print(colored.yellow("POPULATING DIRS"), dirl, colored.yellow(emoticons.get_ran_emot("excited")))
     cmd = py+" "+DI+"populate_dirs_first.py "+tname+" "+dirl+" "+db+" "+gzfiles
 
     if TAXALISTF is not None:
