@@ -94,14 +94,17 @@ if __name__ == "__main__":
 
     trn = tree_reader.read_tree_file_iter(tname).__next__().label
     ## DEBUG
-    print("DEBUG done with get_ncbi_tax_tree_no_species.py")
-    print(f"DEBUG trn: {trn}")
-    input("DEBUG Press Enter to continue...")
+    print(f"DEBUG {__file__}: done with get_ncbi_tax_tree_no_species.py")
+    print(f"DEBUG {__file__}: trn: {trn}")
+    input(f"DEBUG {__file__}: Press Enter to continue...")
 
     # run make_dirs.py
     print(colored.yellow("MAKING DIRS IN"), dirl, colored.yellow(emoticons.get_ran_emot("excited")))
     cmd = py+" "+DI+"make_dirs.py "+tname+" "+dirl
     os.system(cmd)
+    ## DEBUG
+    print(f"DEBUG {__file__}: done with make_dirs.py")
+    input(f"DEBUG {__file__}: Press Enter to continue...")
 
     # run populate_dirs_first.py
     print(colored.yellow("POPULATING DIRS"), dirl, colored.yellow(emoticons.get_ran_emot("excited")))
@@ -112,8 +115,8 @@ if __name__ == "__main__":
 
     os.system(cmd)
     ## DEBUG
-    print("DEBUG done with populate_dirs_first.py")
-    input("DEBUG Press Enter to continue...")
+    print(f"DEBUG {__file__}: done with populate_dirs_first.py")
+    input(f"DEBUG {__file__}: Press Enter to continue...")
 
     if os.path.isfile("log.md.gz"):
         os.remove("log.md.gz")
@@ -122,8 +125,8 @@ if __name__ == "__main__":
     cmd = py+" "+DI+"cluster_tree.py "+dirl+"/"+trn+"/ "+logfile
     os.system(cmd)
     ## DEBUG
-    print("DEBUG done with cluster_tree.py")
-    input("DEBUG Press Enter to continue...")
+    print(f"DEBUG {__file__}: done with cluster_tree.py")
+    input(f"DEBUG {__file__}: Press Enter to continue...")
 
     print(colored.blue("PYPHLAWD DONE "+emoticons.get_ran_emot("excited")))
     end = datetime.now()
