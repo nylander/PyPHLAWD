@@ -1,9 +1,10 @@
+""" populate_dirs_first """
 import os
 import sys
 import tree_reader
 from get_subset_genbank import make_files_with_id as mfid
 from get_subset_genbank import make_files_with_id_internal as mfid_in
-from get_subset_genbank import make_files_with_id_justtable as mfid_justtable
+#from get_subset_genbank import make_files_with_id_justtable as mfid_justtable
 
 if __name__ == "__main__":
     if len(sys.argv) != 5 and len(sys.argv) != 6:
@@ -11,15 +12,20 @@ if __name__ == "__main__":
         sys.exit(0)
 
     tree = next(tree_reader.read_tree_file_iter(sys.argv[1]))
-    dirl = sys.argv[2]
+    # Add debug printing of content of tree
 
-    if dirl[-1] != "/":
-        dirl = dirl + "/"
+    dirl = sys.argv[2]
+    dirl.rstrip('/')
+    if not os.path.isdir(dirl):
+        print(f"Error: '{dirl}' does not exist")
+        sys.exit(1)
 
     DB = sys.argv[3]
+    if not os.path.isfile(DB):
+        print(f"Error: '{DB}' does not exist")
+        sys.exit(1)
 
     gzfileloc = sys.argv[4]
-
     if not os.path.isdir(gzfileloc):
         print(f"ERROR: folder '{gzfileloc}' does not exist")
         sys.exit(1)
