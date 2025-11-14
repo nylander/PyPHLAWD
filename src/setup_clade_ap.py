@@ -93,6 +93,10 @@ if __name__ == "__main__":
     os.system(cmd)
 
     trn = tree_reader.read_tree_file_iter(tname).__next__().label
+    ## DEBUG
+    print("DEBUG done with get_ncbi_tax_tree_no_species.py")
+    print(f"DEBUG trn: {trn}")
+    input("DEBUG Press Enter to continue...")
 
     # run make_dirs.py
     print(colored.yellow("MAKING DIRS IN"), dirl, colored.yellow(emoticons.get_ran_emot("excited")))
@@ -107,6 +111,9 @@ if __name__ == "__main__":
         cmd += " "+TAXALISTF
 
     os.system(cmd)
+    ## DEBUG
+    print("DEBUG done with populate_dirs_first.py")
+    input("DEBUG Press Enter to continue...")
 
     if os.path.isfile("log.md.gz"):
         os.remove("log.md.gz")
@@ -114,6 +121,9 @@ if __name__ == "__main__":
     # run cluster_tree.py
     cmd = py+" "+DI+"cluster_tree.py "+dirl+"/"+trn+"/ "+logfile
     os.system(cmd)
+    ## DEBUG
+    print("DEBUG done with cluster_tree.py")
+    input("DEBUG Press Enter to continue...")
 
     print(colored.blue("PYPHLAWD DONE "+emoticons.get_ran_emot("excited")))
     end = datetime.now()
