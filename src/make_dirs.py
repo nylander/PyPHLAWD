@@ -1,8 +1,9 @@
+""" make_dirs """
 import sys
 import os
+from clint.textui import colored
 import tree_reader
 import emoticons
-from clint.textui import colored
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
@@ -29,11 +30,10 @@ if __name__ == "__main__":
         try:
             os.mkdir(dirl+i.label)
         except:
-            print(colored.red("PROBLEM CREATING"),dirl+i.label,colored.red(emoticons.get_ran_emot("sad")))
+            print(colored.red("PROBLEM CREATING"), dirl+i.label, colored.red(emoticons.get_ran_emot("sad")))
             sys.exit(1)
         try:
             os.mkdir(dirl+i.label+"/clusters")
         except:
-            print(colored.red("PROBLEM CREATING"),dirl+i.label+"/clusters",colored.red(emoticons.get_ran_emot("sad")))
+            print(colored.red("PROBLEM CREATING"), dirl+i.label+"/clusters", colored.red(emoticons.get_ran_emot("sad")))
             sys.exit(1)
-    
