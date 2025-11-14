@@ -4,6 +4,7 @@ import sys
 from datetime import datetime
 import argparse as ap
 from clint.textui import colored
+from utils import bcolors
 from conf import DI
 from conf import py
 import emoticons
@@ -117,7 +118,6 @@ if __name__ == "__main__":
     print(colored.blue("PYPHLAWD DONE "+emoticons.get_ran_emot("excited")))
     end = datetime.now()
     print(colored.blue("Total time (H:M:S): "+str(end-start)+" "+emoticons.get_ran_emot("excited")))
-    from utils import bcolors
     print(bcolors.HEADER, end=' ')
     emoticons.animate(emoticons.glasses_animated)
     print(bcolors.ENDC)
