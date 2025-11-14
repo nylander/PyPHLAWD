@@ -1,4 +1,6 @@
+""" get_ncbi_tax_tree_no_species """
 import sys
+import os
 import sqlite3
 import conf
 if conf.usecython:
@@ -6,12 +8,14 @@ if conf.usecython:
 else:
     import node
 
-exclude_un_en = True
+exclude_un_en = True # unused?
 
 def clean_name(name):
-    return name.replace(" ", "_").replace("&","_").replace(":","_").replace("(","_").replace(")","_")
+    """ clean name """
+    return name.replace(" ", "_").replace("&", "_").replace(":", "_").replace("(", "_").replace(")", "_")
 
-def get_all_included(taxalist,c):
+def get_all_included(taxalist, c):
+    """ get_all_included """
     inc = set()
     for i in taxalist:
         cur = str(i)
@@ -32,11 +36,12 @@ def get_all_included(taxalist,c):
                 print("delete "+i)
     return inc
 
-def construct_tree(taxon, db, taxalist = None):
+def construct_tree(taxon, db, taxalist=None):
+    """ construct tree """
     conn = sqlite3.connect(db)
     c = conn.cursor()
     includelist = None
-    if taxalist != None:
+    if taxalist is not None:
         tl = set()
         tlf = open(taxalist,"r")
         for i in tlf:
@@ -49,7 +54,7 @@ def construct_tree(taxon, db, taxalist = None):
     rt = None
     # node_ids = {}  # id is key, value is parent id
     nodes = {}  # id is key, value is node
-    if (taxon.isdigit()):
+    if taxon.isdigit():
         c.execute("select ncbi_id from taxonomy where ncbi_id = ?", (taxon, ))
     else:
         c.execute("select ncbi_id from taxonomy where name = ? and node_rank != 'species'", (taxon, ))
@@ -67,18 +72,18 @@ def construct_tree(taxon, db, taxalist = None):
         if id not in nodes:
             continue
         done.add(id)
-        c.execute("select ncbi_id,name,name_class,edited_name from taxonomy where parent_ncbi_id = ? and node_rank != 'species'",(id,))
+        c.execute("select ncbi_id,name,name_class,edited_name from taxonomy where parent_ncbi_id = ? and node_rank != 'species'", (id, ))
         childs = []
         for j in c:
             tid = str(j[0])
-            if includelist != None and tid not in includelist:
+            if includelist is not None and tid not in includelist:
                 continue
             childs.append(tid)
             stack.append(tid)
             if "unclassified" in str(j[1]) or "environmental" in str(j[1]):
                 continue
             if str(j[2]) == "scientific name":
-                name = str(j[1])
+                #name = str(j[1])
                 edname = str(j[3])
                 nn = node.Node()
                 nn.label = clean_name(edname)+"_"+str(tid)
@@ -97,9 +102,19 @@ if __name__ == "__main__":
         print("usage: python "+sys.argv[0]+" taxon db [taxalist]")
         sys.exit(0)
     taxon = sys.argv[1]
+    if not taxon:
+        print(f"Error: taxon '{taxon}' is empty")
+        sys.exit(1)
     DB = sys.argv[2]
-    taxalist = None
+    if not os.path.isfile(DB):
+        print(f"Error: DB '{DB}' does not exist")
+        sys.exit(1)
+    TAXALIST = None
     if len(sys.argv) == 4:
-        taxalist = sys.argv[3]
-    tree = construct_tree(taxon, DB, taxalist)
+        TAXALIST = sys.argv[3]
+    tree = construct_tree(taxon, DB, TAXALIST)
+    ## DEBUG
+    print(f"DEBUG {__file__}: done with construct_tree")
+    print(f"DEBUG {__file__}: tree: {tree}")
+    input(f"DEBUG {__file__}: Press Enter to continue...")
     print(tree.get_newick_repr(False)+";")
