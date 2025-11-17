@@ -16,27 +16,27 @@ def generate_argparser ():
                                formatter_class=ap.ArgumentDefaultsHelpFormatter
                                )
     parser.add_argument("-t", "--taxon",
-                        type=str, nargs=1, required=True, metavar=("ID/NAME"),
+                        type=str, required=True, metavar=("ID/NAME"),
                         help=("The id or name of the taxon to be processes.")
                         )
     parser.add_argument("-b", "--database",
-                        type=str, nargs=1, required=True,
+                        type=str, required=True,
                         help=("Location of database.")
                         )
     parser.add_argument("-s", "--seqgzfolder",
-                        type=str, nargs=1, required=True,
+                        type=str, required=True,
                         help=("Location of the gzseqs directory")
                         )
     parser.add_argument("-o", "--outdir",
-                        type=str, nargs=1, required=True,
-                       help=("Location of the output directory (must already exist).")
+                        type=str, required=True,
+                        help=("Location of the output directory (must already exist).")
                         )
     parser.add_argument("-l", "--logfile",
-                        type=str, nargs=1, required=True,
+                        type=str, required=True,
                         help=("Where to write the logfile.")
                         )
     parser.add_argument("-f", "--tlistf",
-                        type=str, nargs=1, required=False,
+                        type=str, required=False,
                         help=("Taxon list file.")
                         )
     return parser.parse_args()
@@ -48,8 +48,7 @@ if __name__ == "__main__":
     start = datetime.now()
 
     # Output directory (must exists!)
-    dirl = args.outdir
-    dirl.rstrip('/')
+    dirl = os.path.normpath(args.outdir)
     if not os.path.isdir(dirl):
         print(f"Error: '{dirl}' does not exist")
         sys.exit(1)
@@ -75,8 +74,7 @@ if __name__ == "__main__":
         logfile += ".md.gz"
 
     # Folder with ?????
-    gzfiles = args.seqgzfolder
-    gzfiles.rstrip('/')
+    gzfiles = os.path.normpath(args.seqgzfolder)
     if not os.path.isdir(gzfiles):
         print(f"Error: '{gzfiles}' does not exist")
         sys.exit(1)

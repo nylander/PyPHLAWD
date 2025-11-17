@@ -14,8 +14,7 @@ if __name__ == "__main__":
     tree = next(tree_reader.read_tree_file_iter(sys.argv[1]))
     # Add debug printing of content of tree
 
-    dirl = sys.argv[2]
-    dirl.rstrip('/')
+    dirl = os.path.normpath(sys.argv[2])
     if not os.path.isdir(dirl):
         print(f"Error: '{dirl}' does not exist")
         sys.exit(1)
