@@ -113,8 +113,8 @@ if __name__ == "__main__":
     if len(sys.argv) == 4:
         TAXALIST = sys.argv[3]
     tree = construct_tree(taxon, DB, TAXALIST)
-    ## DEBUG
+    # DEBUG JN
     print(f"DEBUG {__file__}: done with construct_tree")
     print(f"DEBUG {__file__}: tree: {tree}")
-    input(f"DEBUG {__file__}: Press Enter to continue...")
+    #input(f"DEBUG {__file__}: Press Enter to continue...")
     print(tree.get_newick_repr(False)+";")
