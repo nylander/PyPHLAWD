@@ -12,7 +12,6 @@ if __name__ == "__main__":
         sys.exit(0)
 
     tree = next(tree_reader.read_tree_file_iter(sys.argv[1]))
-    # Add debug printing of content of tree
 
     dirl = os.path.normpath(sys.argv[2])
     if not os.path.isdir(dirl):
