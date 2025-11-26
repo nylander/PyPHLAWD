@@ -1,7 +1,17 @@
 """
 get_subset_genbank
 
+Usage: python get_subset_genbank.py tid db outfile
+
+Positional arguments
+
+    tid: taxon id
+    db: database file
+    outfile: outfile base name
+
 This version of the file is updated to take into account the change from gi to acc
+
+JN: rewrite Nov 2025
 
 """
 
@@ -21,33 +31,59 @@ def clean_name(nm):
     nm = nm.replace(",", " ")
     return nm
 
-def get_seq_from_gz(gzdir, filename, idtoget):
-    """ get_seq_from_gz """
-    fl = gzip.open(gzdir+"/"+filename, "r")
-    for i in fl:
-        if str(i.decode()).split(" ")[0] == idtoget:
-            return str(i.decode()).split(" ")[1]
-    fl.close()
-    return None
-
 def get_seqs_from_gz(gzdir, filename, idstoget):
-    """ get_seqs_from_gz """
-    fl = gzip.open(gzdir+"/"+filename, "r")
-    idtoseq = {}
-    for i in idstoget:
-        idtoseq[i] = None
-    idstoget = set(idstoget)
-    for i in fl:
-        if str(i.decode()).split(" ")[0] in idstoget:
-            idtoseq[str(i.decode()).split(" ")[0]] = str(i.decode()).split(" ")[1]
-    fl.close()
-    return idtoseq
+    """ JN: New get_seqs_from_gz """
+    try:
+        with gzip.open(gzdir+"/"+filename,'rb') as fl:
+            #fl = gzip.open(gzdir+"/"+filename,"r")
+            idtoseq = {tid: "" for tid in idstoget}
+            current_id = None
+            in_sequence_block = False
+            for line in fl:
+                line = line.decode()
+                if line.startswith("LOCUS"):
+                    # Reset for a new record
+                    current_id = None
+                    in_sequence_block = False
+                if line.startswith("ACCESSION"):
+                    # Extract the accession ID (e.g., OZ185191)
+                    parts = line.strip().split()
+                    if len(parts) > 1:
+                        current_id = parts[1]
+                # Check if we are in the sequence block for an ID we want
+                if current_id in idstoget:
+                    if line.strip().startswith("ORIGIN"):
+                        in_sequence_block = True
+                        continue
+                    if in_sequence_block:
+                        # Sequence lines start with a number and then the sequence data
+                        # Filter out line numbers and spaces
+                        line_parts = line.strip().split()
+                        if line_parts and line_parts[0].isdigit():
+                            sequence_data = "".join(line_parts[1:])
+                            idtoseq[current_id] += sequence_data
+                        elif line.strip().startswith("//"):
+                            # End of record
+                            in_sequence_block = False
+                            current_id = None
+            fl.close()
+        # Final check and cleanup
+        for tid in list(idtoseq.keys()):
+            if idtoseq[tid] == "":
+                # Sequence not found, set to None as per original script's logic for "too big"
+                idtoseq[tid] = None
+        return idtoseq
+    except (OSError, ValueError):
+        print(f"ERROR: {OSError} {ValueError}")
+        sys.exit(1)
 
 def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         remove_genomes=False, limitlist=None, excludetax=None):
     """
     make_files_with_id
     If outfilen and outfile_tbln are None, the results will be returned
+    TODO: Q: gzfileloc: where is it provided? 
+          A: when running make_files_with_id from inside populate_dirs_first.py via setup_clade_ap.py!
     """
     if outfilen is not None and outfile_tbln is not None:
         outfile = open(outfilen, "w")
@@ -56,9 +92,8 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
             outfileg = open(outfilen+".genomes", "w")
         outfile_tbl = open(outfile_tbln, "w")
     retseqs = [] # return if filenames aren't given
-    rettbs = []  # returning if filenames aren't given
+    rettbs = [] # returning if filenames aren't given
     conn = sqlite3.connect(DB)
-    #c = conn.cursor()
     try:
         c = conn.cursor()
     except Exception as ex:
@@ -68,18 +103,16 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
     stack = []
     stack.append(str(taxonid))
     # DEBUG JN
-    print(f"DEBUG {__file__}: stack: {stack}")
-
+    #print(f"DEBUG {__file__}: stack: {stack}")
     files_ids = {} # key is the file, value is a list of ids
     ids_props = {} # key is id, value is list of properties
     while len(stack) > 0:
         id = stack.pop()
         # DEBUG JN
-        print(f"DEBUG {__file__}: id: {id}")
+        #print(f"DEBUG {__file__}: id: {id}")
         if id in species:
             continue
         species.append(id)
-        # exclude bad taxa
         if str(id) in taxonids:
             continue
         if excludetax is not None:
@@ -90,9 +123,7 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         for j in l:
             tname = str(j[0])
             # DEBUG JN
-            print(f"DEBUG {__file__}: tname: {tname}")
-
-        # exclude some patterns
+            #print(f"DEBUG {__file__}: tname: {tname}")
         badpattern = False
         for i in patterns:
             if i in tname:
@@ -140,8 +171,7 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         idstoseq = get_seqs_from_gz(gzfileloc, fn, files_ids[fn])
         for tid in idstoseq:
             # DEBUG JN
-            print(f"DEBUG {__file__}: tid: {tid}")
-
+            #print(f"DEBUG {__file__}: tid: {tid}")
             seqstr = idstoseq[tid]
             if seqstr is None: # too big
                 continue
@@ -163,9 +193,8 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
             # we are writing
             seqst = ">"+str(ids_props[tid][3]+"\n"+seqstr)
             # DEBUG JN
-            print(f"DEBUG {__file__}: ids_props[tid][3]: {ids_props[tid][3]}")
-            print(f"DEBUG {__file__}: seqstr: {seqstr}")
-
+            #print(f"DEBUG {__file__}: ids_props[tid][3]: {ids_props[tid][3]}")
+            #print(f"DEBUG {__file__}: seqstr: {seqstr}")
             tblst = "\t".join(ids_props[tid])
             if outfilen is not None and outfile_tbln is not None:
                 if remove_genomes:
@@ -203,18 +232,16 @@ def make_files_with_id_internal(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         if remove_genomes:
             outfileg = open(outfilen+".genomes", "w")
         outfile_tbl = open(outfile_tbln, "w")
-    retseqs = []     # return if filenames aren't given
-    rettbs = []      # returning if filenames aren't given
-    files_ids = {}   # key is the file, value is a list of ids
-    ids_props = {}   # key is id, value is list of properties
+    retseqs = [] # return if filenames aren't given
+    rettbs = [] # returning if filenames aren't given
+    files_ids = {} # key is the file, value is a list of ids
+    ids_props = {} # key is id, value is list of properties
     conn = sqlite3.connect(DB)
-    #c = conn.cursor()
     try:
         c = conn.cursor()
     except Exception as ex:
         print(f"Error: could not connect to {DB}: {ex}")
         sys.exit(1)
-    # only get the ones that are this specific taxon
     c.execute("select name from taxonomy where ncbi_id = ? and name_class = 'scientific name'", (str(taxonid), ))
     l = c.fetchall()
     for j in l:
@@ -255,25 +282,21 @@ def make_files_with_id_internal(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         nt = str(j[0])
         c.execute("select ncbi_id from taxonomy where parent_ncbi_id = ?", (str(nt), ))
         m = c.fetchall()
-        count = 0
-        for n in m:
-            count += 1
-        if count == 0:
+        if len(m) == 0:
             keepers.append(nt)
     # get everything else for the table
     species = []
     stack = []
     stack.append(str(taxonid))
     # DEBUG JN
-    print(f"DEBUG {__file__}: stack: {stack}")
+    #print(f"DEBUG {__file__}: stack: {stack}")
     while len(stack) > 0:
         id = stack.pop()
         # DEBUG JN
-        print(f"DEBUG {__file__}: id: {id}")
+        #print(f"DEBUG {__file__}: id: {id}")
         if id in species:
             continue
         species.append(id)
-        # exclude bad taxa
         if str(id) in taxonids:
             continue
         c.execute("select name from taxonomy where ncbi_id = ? and name_class = 'scientific name'", (id, ))
@@ -281,9 +304,7 @@ def make_files_with_id_internal(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         for j in l:
             tname = str(j[0])
             # DEBUG JN
-            print(f"DEBUG {__file__}: tname: {tname}")
-
-        # exclude some patterns
+            #print(f"DEBUG {__file__}: tname: {tname}")
         badpattern = False
         for i in patterns:
             if i in tname:
@@ -326,8 +347,7 @@ def make_files_with_id_internal(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         idstoseq = get_seqs_from_gz(gzfileloc, fn, files_ids[fn])
         for tid in idstoseq:
             # DEBUG JN
-            print(f"DEBUG {__file__}: tid: {tid}")
-
+            #print(f"DEBUG {__file__}: tid: {tid}")
             seqstr = idstoseq[tid]
             if seqstr is None: # too big
                 continue
@@ -349,9 +369,8 @@ def make_files_with_id_internal(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
             # we are writing
             seqst = ">"+str(ids_props[tid][3]+"\n"+seqstr)
             # DEBUG JN
-            print(f"DEBUG {__file__}: ids_props[tid][3] : {ids_props[tid][3]}")
-            print(f"DEBUG {__file__}: seqstr : {seqstr}")
-
+            #print(f"DEBUG {__file__}: ids_props[tid][3] : {ids_props[tid][3]}")
+            #print(f"DEBUG {__file__}: seqstr : {seqstr}")
             tblst = "\t".join(ids_props[tid])
             if outfilen is not None and outfile_tbln is not None:
             # if ids_props[tid][1] in keepers:
@@ -386,7 +405,6 @@ def make_files_with_id_justtable(taxonid, DB, outfile_tbln):
     if outfile_tbln is not None:
         outfile_tbl = open(outfile_tbln, "w")
     conn = sqlite3.connect(DB)
-    #c = conn.cursor()
     try:
         c = conn.cursor()
     except Exception as ex:
@@ -397,13 +415,11 @@ def make_files_with_id_justtable(taxonid, DB, outfile_tbln):
     tbl = []
     stack.append(str(taxonid))
     # DEBUG JN
-    print(f"DEBUG {__file__}: stack : {stack}")
-
+    #print(f"DEBUG {__file__}: stack : {stack}")
     while len(stack) > 0:
         id = stack.pop()
         # DEBUG JN
-        print(f"DEBUG {__file__}: id : {id}")
-
+        #print(f"DEBUG {__file__}: id : {id}")
         if id in species:
             continue
         species.append(id)
@@ -416,8 +432,7 @@ def make_files_with_id_justtable(taxonid, DB, outfile_tbln):
         for j in l:
             tbls = str(j[0])+"\t"+str(j[1])+"\t"+str(j[2])+"\t"+str(j[3])+"\t"+str(clean_name(tname))+"\t"+str(j[5])+"\t"+str(j[6])
             # DEBUG JN
-            print(f"DEBUG {__file__}: tbls : {tbls}")
-
+            #print(f"DEBUG {__file__}: tbls : {tbls}")
             if outfile_tbln is not None:
                 outfile_tbl.write(tbls+"\n")
             else:
@@ -438,7 +453,6 @@ def make_files(taxon, DB, outfilen, outfile_tbln):
     outfile = open(outfilen, "w")
     outfile_tbl = open(outfile_tbln, "w")
     conn = sqlite3.connect(DB)
-    #c = conn.cursor()
     try:
         c = conn.cursor()
     except Exception as ex:
@@ -450,13 +464,11 @@ def make_files(taxon, DB, outfilen, outfile_tbln):
     for j in c:
         stack.append(str(j[0]))
     # DEBUG JN
-    print(f"DEBUG {__file__}: stack : {stack}")
-
+    #print(f"DEBUG {__file__}: stack : {stack}")
     while len(stack) > 0:
         id = stack.pop()
         # DEBUG JN
-        print(f"DEBUG {__file__}: id : {id}")
-
+        #print(f"DEBUG {__file__}: id : {id}")
         if id in species:
             continue
         species.append(id)
@@ -481,13 +493,10 @@ if __name__ == "__main__":
         print("usage: python "+sys.argv[0]+" tid db outfile")
         sys.exit(0)
     tid = sys.argv[1]
-    # TODO: test
     DB = sys.argv[2]
     if not os.path.isfile(DB):
         print(f"Error: '{DB}' does not exist")
         sys.exit(1)
     outfilen = sys.argv[3]
-    # TODO: test
     outfile_tbln = sys.argv[3]+".table"
-    # TODO: test
-    make_files_with_id(tid, DB, outfilen, outfile_tbln) #  No value for argument 'gzfileloc' in function call (no-value-for-parameter)
+    make_files_with_id(tid, DB, outfilen, outfile_tbln) #  No value for argument 'gzfileloc' in function call (no-value-for-parameter)!
