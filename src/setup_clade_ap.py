@@ -73,7 +73,7 @@ if __name__ == "__main__":
     if not logfile.endswith(".md.gz"):
         logfile += ".md.gz"
 
-    # Folder with ?????
+    # Folder with ? "gz files"?
     gzfiles = os.path.normpath(args.seqgzfolder)
     if not os.path.isdir(gzfiles):
         print(f"Error: '{gzfiles}' does not exist")
