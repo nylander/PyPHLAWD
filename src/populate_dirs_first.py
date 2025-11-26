@@ -54,6 +54,6 @@ if __name__ == "__main__":
         tid = orig.split("_")[-1]
         dirr = i.label
         if len(i.children) == 0:
-            mfid(tid, DB, dirl+dirr+"/"+orig+".fas", dirl+dirr+"/"+orig+".table", gzfileloc, True, limitlist=taxalist)
+            mfid(tid, DB, dirl+"/"+dirr+"/"+orig+".fas", dirl+"/"+dirr+"/"+orig+".table", gzfileloc, True, limitlist=taxalist)
         else:
-            mfid_in(tid, DB, dirl+dirr+"/"+orig+".fas", dirl+dirr+"/"+orig+".table", gzfileloc, True, limitlist=taxalist)
+            mfid_in(tid, DB, dirl+"/"+dirr+"/"+orig+".fas", dirl+"/"+dirr+"/"+orig+".table", gzfileloc, True, limitlist=taxalist)
