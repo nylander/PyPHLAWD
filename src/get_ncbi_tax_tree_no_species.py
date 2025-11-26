@@ -96,7 +96,6 @@ def construct_tree(taxon, db, taxalist=None):
             species.append(id)
     return rt
 
-
 if __name__ == "__main__":
     if len(sys.argv) != 3 and len(sys.argv) != 4:
         print("usage: python "+sys.argv[0]+" taxon db [taxalist]")
@@ -114,7 +113,7 @@ if __name__ == "__main__":
         TAXALIST = sys.argv[3]
     tree = construct_tree(taxon, DB, TAXALIST)
     # DEBUG JN
-    print(f"DEBUG {__file__}: done with construct_tree")
-    print(f"DEBUG {__file__}: tree: {tree}")
+    print(f"DEBUG {__file__}: done with construct_tree", file=sys.stderr)
+    print(f"DEBUG {__file__}: tree: {tree}", file=sys.stderr)
     #input(f"DEBUG {__file__}: Press Enter to continue...")
     print(tree.get_newick_repr(False)+";")

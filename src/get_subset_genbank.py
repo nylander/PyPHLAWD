@@ -103,13 +103,13 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
     stack = []
     stack.append(str(taxonid))
     # DEBUG JN
-    #print(f"DEBUG {__file__}: stack: {stack}")
+    #print(f"DEBUG {__file__}: stack: {stack}", file=sys.stderr)
     files_ids = {} # key is the file, value is a list of ids
     ids_props = {} # key is id, value is list of properties
     while len(stack) > 0:
         id = stack.pop()
         # DEBUG JN
-        #print(f"DEBUG {__file__}: id: {id}")
+        #print(f"DEBUG {__file__}: id: {id}", file=sys.stderr)
         if id in species:
             continue
         species.append(id)
@@ -123,7 +123,7 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         for j in l:
             tname = str(j[0])
             # DEBUG JN
-            #print(f"DEBUG {__file__}: tname: {tname}")
+            #print(f"DEBUG {__file__}: tname: {tname}", file=sys.stderr)
         badpattern = False
         for i in patterns:
             if i in tname:
@@ -169,16 +169,16 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
     # get all the seqs from the file at once
     for fn in files_ids:
         # DEBUG JN
-        #print(f"DEBUG {__file__}: fn: {fn}")
+        #print(f"DEBUG {__file__}: fn: {fn}", file=sys.stderr)
         idstoseq = get_seqs_from_gz(gzfileloc, fn, files_ids[fn])
         for tid in idstoseq:
             # DEBUG JN
-            #print(f"DEBUG {__file__}: tid: {tid}")
+            #print(f"DEBUG {__file__}: tid: {tid}", file=sys.stderr)
             seqstr = idstoseq[tid]
             if seqstr is None: # too big
                 continue
             # DEBUG JN
-            #print(f"DEBUG {__file__}: len(seqstr): {len(seqstr)}")
+            #print(f"DEBUG {__file__}: len(seqstr): {len(seqstr)}", file=sys.stderr)
             if len(seqstr) < smallest_size:
                 continue
             # exclude bad taxa
@@ -197,8 +197,8 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
             # we are writing
             seqst = ">"+str(ids_props[tid][3]+"\n"+seqstr)
             # DEBUG JN
-            #print(f"DEBUG {__file__}: ids_props[tid][3]: {ids_props[tid][3]}")
-            #print(f"DEBUG {__file__}: seqstr: {seqstr}")
+            #print(f"DEBUG {__file__}: ids_props[tid][3]: {ids_props[tid][3]}", file=sys.stderr)
+            #print(f"DEBUG {__file__}: seqstr: {seqstr}", file=sys.stderr)
             tblst = "\t".join(ids_props[tid])
             if outfilen is not None and outfile_tbln is not None:
                 if remove_genomes:
@@ -293,11 +293,11 @@ def make_files_with_id_internal(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
     stack = []
     stack.append(str(taxonid))
     # DEBUG JN
-    #print(f"DEBUG {__file__}: stack: {stack}")
+    #print(f"DEBUG {__file__}: stack: {stack}", file=sys.stderr)
     while len(stack) > 0:
         id = stack.pop()
         # DEBUG JN
-        #print(f"DEBUG {__file__}: id: {id}")
+        #print(f"DEBUG {__file__}: id: {id}", file=sys.stderr)
         if id in species:
             continue
         species.append(id)
@@ -308,7 +308,7 @@ def make_files_with_id_internal(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         for j in l:
             tname = str(j[0])
             # DEBUG JN
-            #print(f"DEBUG {__file__}: tname: {tname}")
+            #print(f"DEBUG {__file__}: tname: {tname}", file=sys.stderr)
         badpattern = False
         for i in patterns:
             if i in tname:
@@ -351,7 +351,7 @@ def make_files_with_id_internal(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         idstoseq = get_seqs_from_gz(gzfileloc, fn, files_ids[fn])
         for tid in idstoseq:
             # DEBUG JN
-            #print(f"DEBUG {__file__}: tid: {tid}")
+            #print(f"DEBUG {__file__}: tid: {tid}", file=sys.stderr)
             seqstr = idstoseq[tid]
             if seqstr is None: # too big
                 continue
@@ -373,8 +373,8 @@ def make_files_with_id_internal(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
             # we are writing
             seqst = ">"+str(ids_props[tid][3]+"\n"+seqstr)
             # DEBUG JN
-            #print(f"DEBUG {__file__}: ids_props[tid][3] : {ids_props[tid][3]}")
-            #print(f"DEBUG {__file__}: seqstr : {seqstr}")
+            #print(f"DEBUG {__file__}: ids_props[tid][3] : {ids_props[tid][3]}", file=sys.stderr)
+            #print(f"DEBUG {__file__}: seqstr : {seqstr}", file=sys.stderr)
             tblst = "\t".join(ids_props[tid])
             if outfilen is not None and outfile_tbln is not None:
             # if ids_props[tid][1] in keepers:
@@ -419,11 +419,11 @@ def make_files_with_id_justtable(taxonid, DB, outfile_tbln):
     tbl = []
     stack.append(str(taxonid))
     # DEBUG JN
-    #print(f"DEBUG {__file__}: stack : {stack}")
+    #print(f"DEBUG {__file__}: stack : {stack}", file=sys.stderr)
     while len(stack) > 0:
         id = stack.pop()
         # DEBUG JN
-        #print(f"DEBUG {__file__}: id : {id}")
+        #print(f"DEBUG {__file__}: id : {id}", file=sys.stderr)
         if id in species:
             continue
         species.append(id)
@@ -436,7 +436,7 @@ def make_files_with_id_justtable(taxonid, DB, outfile_tbln):
         for j in l:
             tbls = str(j[0])+"\t"+str(j[1])+"\t"+str(j[2])+"\t"+str(j[3])+"\t"+str(clean_name(tname))+"\t"+str(j[5])+"\t"+str(j[6])
             # DEBUG JN
-            #print(f"DEBUG {__file__}: tbls : {tbls}")
+            #print(f"DEBUG {__file__}: tbls : {tbls}", file=sys.stderr)
             if outfile_tbln is not None:
                 outfile_tbl.write(tbls+"\n")
             else:
@@ -468,11 +468,11 @@ def make_files(taxon, DB, outfilen, outfile_tbln):
     for j in c:
         stack.append(str(j[0]))
     # DEBUG JN
-    #print(f"DEBUG {__file__}: stack : {stack}")
+    #print(f"DEBUG {__file__}: stack : {stack}", file=sys.stderr)
     while len(stack) > 0:
         id = stack.pop()
         # DEBUG JN
-        #print(f"DEBUG {__file__}: id : {id}")
+        #print(f"DEBUG {__file__}: id : {id}", file=sys.stderr)
         if id in species:
             continue
         species.append(id)

@@ -87,17 +87,17 @@ if __name__ == "__main__":
         cmd = py+" "+DI+"get_ncbi_tax_tree_no_species.py "+taxon+" "+db+" "+TAXALISTF+" > "+tname
     else:
         ## DEBUG JN
-        print(f"DEBUG {__file__}: taxon: {taxon} db: {db} tname: {tname}")
+        print(f"DEBUG {__file__}: taxon: {taxon} db: {db} tname: {tname}", file=sys.stderr)
         cmd = py+" "+DI+"get_ncbi_tax_tree_no_species.py "+taxon+" "+db+" > "+tname
 
     os.system(cmd)
     ## DEBUG JN
-    print(f"DEBUG {__file__}:  send command {cmd}")
+    print(f"DEBUG {__file__}:  send command {cmd}", file=sys.stderr)
 
     trn = tree_reader.read_tree_file_iter(tname).__next__().label
     ## DEBUG JN
-    #print(f"DEBUG {__file__}: done with get_ncbi_tax_tree_no_species.py")
-    #print(f"DEBUG {__file__}: trn: {trn}")
+    #print(f"DEBUG {__file__}: done with get_ncbi_tax_tree_no_species.py", file=sys.stderr)
+    #print(f"DEBUG {__file__}: trn: {trn}", file=sys.stderr)
     #input(f"DEBUG {__file__}: Press Enter to continue...")
 
     # run make_dirs.py
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     cmd = py+" "+DI+"make_dirs.py "+tname+" "+dirl
     os.system(cmd)
     ## DEBUG JN
-    #print(f"DEBUG {__file__}: done with make_dirs.py")
+    #print(f"DEBUG {__file__}: done with make_dirs.py", file=sys.stderr)
     #input(f"DEBUG {__file__}: Press Enter to continue...")
 
     # run populate_dirs_first.py
@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
     os.system(cmd)
     # DEBUG JN
-    #print(f"DEBUG {__file__}: done with populate_dirs_first.py")
+    #print(f"DEBUG {__file__}: done with populate_dirs_first.py", file=sys.stderr)
     #input(f"DEBUG {__file__}: Press Enter to continue...")
 
     if os.path.isfile("log.md.gz"):
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     cmd = py+" "+DI+"cluster_tree.py "+dirl+"/"+trn+"/ "+logfile
     os.system(cmd)
     # DEBUG JN
-    #print(f"DEBUG {__file__}: done with cluster_tree.py")
+    #print(f"DEBUG {__file__}: done with cluster_tree.py", file=sys.stderr)
     #input(f"DEBUG {__file__}: Press Enter to continue...")
 
     print(colored.blue("PYPHLAWD DONE "+emoticons.get_ran_emot("excited")))
