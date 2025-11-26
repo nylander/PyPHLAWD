@@ -123,7 +123,7 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         for j in l:
             tname = str(j[0])
             # DEBUG JN
-            print(f"DEBUG {__file__}: in make_files_with_id, after first db call, we should see a tname: {tname}", file=sys.stderr)
+            #print(f"DEBUG {__file__}: in make_files_with_id, after first db call, we should see a tname: {tname}", file=sys.stderr)
         badpattern = False
         for i in patterns:
             if i in tname:
@@ -135,7 +135,7 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         l = c.fetchall()
         for j in l:
             # DEBUG JN
-            print(f"DEBUG {__file__}: in make_files_with_id, after second db call, we should see j: {j}", file=sys.stderr)
+            #print(f"DEBUG {__file__}: in make_files_with_id, after second db call, we should see j: {j}", file=sys.stderr)
             # if the title sequence name is not the same as the id name (first part)
             # then we skip it. sorry sequence! you are outta here
             if filternamemismatch:
@@ -167,22 +167,22 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         l = c.fetchall()
         for j in l:
             # DEBUG JN
-            print(f"DEBUG {__file__}: in make_files_with_id, after third db call, we should see j: {j}", file=sys.stderr)
+            #print(f"DEBUG {__file__}: in make_files_with_id, after third db call, we should see j: {j}", file=sys.stderr)
             childs.append(str(j[0]))
             stack.append(str(j[0]))
     # get all the seqs from the file at once
     for fn in files_ids:
         # DEBUG JN
-        print(f"DEBUG {__file__}: in make_files_with_id, we are iterating over files_ids: fn: {fn}", file=sys.stderr)
+        print(f"DEBUG {__file__}: in make_files_with_id,  we should see that we are iterating over files_ids: fn: {fn}", file=sys.stderr)
         idstoseq = get_seqs_from_gz(gzfileloc, fn, files_ids[fn])
         for tid in idstoseq:
             # DEBUG JN
-            #print(f"DEBUG {__file__}: tid: {tid}", file=sys.stderr)
+            print(f"DEBUG {__file__}: in make_files_with_id, we should see tid: {tid}", file=sys.stderr)
             seqstr = idstoseq[tid]
+            # DEBUG JN
+            print(f"DEBUG {__file__}: in make_files_with_id, for tid {tid}, we should see len(seqstr): {len(seqstr)}", file=sys.stderr)
             if seqstr is None: # too big
                 continue
-            # DEBUG JN
-            print(f"DEBUG {__file__}: in make_files_with_id, for tid {tid}, len(seqstr): {len(seqstr)}", file=sys.stderr)
             if len(seqstr) < smallest_size:
                 continue
             # exclude bad taxa
