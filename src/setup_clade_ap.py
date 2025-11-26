@@ -87,12 +87,12 @@ if __name__ == "__main__":
         cmd = py+" "+DI+"get_ncbi_tax_tree_no_species.py "+taxon+" "+db+" "+TAXALISTF+" > "+tname
     else:
         ## DEBUG JN
-        print(f"DEBUG {__file__}: taxon: {taxon} db: {db} tname: {tname}", file=sys.stderr)
+        #print(f"DEBUG {__file__}: taxon: {taxon} db: {db} tname: {tname}", file=sys.stderr)
         cmd = py+" "+DI+"get_ncbi_tax_tree_no_species.py "+taxon+" "+db+" > "+tname
 
     os.system(cmd)
     ## DEBUG JN
-    print(f"DEBUG {__file__}:  send command {cmd}", file=sys.stderr)
+    #print(f"DEBUG {__file__}:  send command {cmd}", file=sys.stderr)
 
     trn = tree_reader.read_tree_file_iter(tname).__next__().label
     ## DEBUG JN
