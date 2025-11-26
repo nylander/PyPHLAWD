@@ -82,7 +82,7 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
     """
     make_files_with_id
     If outfilen and outfile_tbln are None, the results will be returned
-    TODO: Q: gzfileloc: where is it provided? 
+    TODO: Q: gzfileloc: where is it provided?
           A: when running make_files_with_id from inside populate_dirs_first.py via setup_clade_ap.py!
     """
     if outfilen is not None and outfile_tbln is not None:
@@ -173,7 +173,7 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         idstoseq = get_seqs_from_gz(gzfileloc, fn, files_ids[fn])
         for tid in idstoseq:
             # DEBUG JN
-            #print(f"DEBUG {__file__}: tid: {tid}", file=sys.stderr)
+            print(f"DEBUG {__file__}: tid: {tid}", file=sys.stderr)
             seqstr = idstoseq[tid]
             if seqstr is None: # too big
                 continue
@@ -197,7 +197,7 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
             # we are writing
             seqst = ">"+str(ids_props[tid][3]+"\n"+seqstr)
             # DEBUG JN
-            #print(f"DEBUG {__file__}: ids_props[tid][3]: {ids_props[tid][3]}", file=sys.stderr)
+            print(f"DEBUG {__file__}: ids_props[tid][3]: {ids_props[tid][3]}", file=sys.stderr)
             #print(f"DEBUG {__file__}: seqstr: {seqstr}", file=sys.stderr)
             tblst = "\t".join(ids_props[tid])
             if outfilen is not None and outfile_tbln is not None:
@@ -297,7 +297,7 @@ def make_files_with_id_internal(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
     while len(stack) > 0:
         id = stack.pop()
         # DEBUG JN
-        #print(f"DEBUG {__file__}: id: {id}", file=sys.stderr)
+        print(f"DEBUG {__file__}: id: {id}", file=sys.stderr)
         if id in species:
             continue
         species.append(id)
@@ -308,7 +308,7 @@ def make_files_with_id_internal(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         for j in l:
             tname = str(j[0])
             # DEBUG JN
-            #print(f"DEBUG {__file__}: tname: {tname}", file=sys.stderr)
+            print(f"DEBUG {__file__}: in make_files_with_id_internal, tname: {tname}", file=sys.stderr)
         badpattern = False
         for i in patterns:
             if i in tname:
@@ -351,7 +351,7 @@ def make_files_with_id_internal(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         idstoseq = get_seqs_from_gz(gzfileloc, fn, files_ids[fn])
         for tid in idstoseq:
             # DEBUG JN
-            #print(f"DEBUG {__file__}: tid: {tid}", file=sys.stderr)
+            print(f"DEBUG {__file__}: in make_files_with_id_internal, tid: {tid}", file=sys.stderr)
             seqstr = idstoseq[tid]
             if seqstr is None: # too big
                 continue
@@ -373,7 +373,7 @@ def make_files_with_id_internal(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
             # we are writing
             seqst = ">"+str(ids_props[tid][3]+"\n"+seqstr)
             # DEBUG JN
-            #print(f"DEBUG {__file__}: ids_props[tid][3] : {ids_props[tid][3]}", file=sys.stderr)
+            print(f"DEBUG {__file__}: in make_files_with_id_internal, ids_props[tid][3] : {ids_props[tid][3]}", file=sys.stderr)
             #print(f"DEBUG {__file__}: seqstr : {seqstr}", file=sys.stderr)
             tblst = "\t".join(ids_props[tid])
             if outfilen is not None and outfile_tbln is not None:
@@ -436,7 +436,7 @@ def make_files_with_id_justtable(taxonid, DB, outfile_tbln):
         for j in l:
             tbls = str(j[0])+"\t"+str(j[1])+"\t"+str(j[2])+"\t"+str(j[3])+"\t"+str(clean_name(tname))+"\t"+str(j[5])+"\t"+str(j[6])
             # DEBUG JN
-            #print(f"DEBUG {__file__}: tbls : {tbls}", file=sys.stderr)
+            print(f"DEBUG {__file__}: in make_files_with_id_justtable, tbls : {tbls}", file=sys.stderr)
             if outfile_tbln is not None:
                 outfile_tbl.write(tbls+"\n")
             else:
@@ -472,7 +472,7 @@ def make_files(taxon, DB, outfilen, outfile_tbln):
     while len(stack) > 0:
         id = stack.pop()
         # DEBUG JN
-        #print(f"DEBUG {__file__}: id : {id}", file=sys.stderr)
+        print(f"DEBUG {__file__}: in make_files, id : {id}", file=sys.stderr)
         if id in species:
             continue
         species.append(id)

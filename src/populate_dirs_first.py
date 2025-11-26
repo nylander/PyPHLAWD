@@ -31,11 +31,12 @@ if __name__ == "__main__":
     taxalist = None
 
     if len(sys.argv) == 6:
-        taxalistf = open(sys.argv[5],"r")
+        taxalistf = open(sys.argv[5], "r")
         taxalist = set()
         for i in taxalistf:
             taxalist.add(i.strip())
         taxalistf.close()
+
     didntmake = set()
 
     for i in tree.iternodes():
