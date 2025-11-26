@@ -56,9 +56,9 @@ if __name__ == "__main__":
         dirr = i.label
         if len(i.children) == 0:
             # DEBUG JN
-            print(f"DEBUG {__file__}: doing mfid, tid: {tid}, gzfileloc: {gzfileloc}", file=sys.stderr)
+            #print(f"DEBUG {__file__}: doing mfid, tid: {tid}, gzfileloc: {gzfileloc}", file=sys.stderr)
             mfid(tid, DB, dirl+"/"+dirr+"/"+orig+".fas", dirl+"/"+dirr+"/"+orig+".table", gzfileloc, True, limitlist=taxalist)
         else:
             # DEBUG JN
-            print(f"DEBUG {__file__}: doing mfid_in, tid: {tid}, gzfileloc: {gzfileloc}", file=sys.stderr)
+            #print(f"DEBUG {__file__}: doing mfid_in, tid: {tid}, gzfileloc: {gzfileloc}", file=sys.stderr)
             mfid_in(tid, DB, dirl+"/"+dirr+"/"+orig+".fas", dirl+"/"+dirr+"/"+orig+".table", gzfileloc, True, limitlist=taxalist)

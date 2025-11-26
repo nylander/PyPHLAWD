@@ -123,7 +123,7 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         for j in l:
             tname = str(j[0])
             # DEBUG JN
-            #print(f"DEBUG {__file__}: tname: {tname}", file=sys.stderr)
+            print(f"DEBUG {__file__}: in make_files_with_id, after first db call, we should see a tname: {tname}", file=sys.stderr)
         badpattern = False
         for i in patterns:
             if i in tname:
@@ -134,6 +134,8 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         c.execute("select * from sequence where ncbi_id = ?", (id, )) # this will give the filename in the folder
         l = c.fetchall()
         for j in l:
+            # DEBUG JN
+            print(f"DEBUG {__file__}: in make_files_with_id, after second db call, we should see j: {j}", file=sys.stderr)
             # if the title sequence name is not the same as the id name (first part)
             # then we skip it. sorry sequence! you are outta here
             if filternamemismatch:
@@ -164,12 +166,14 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
         childs = []
         l = c.fetchall()
         for j in l:
+            # DEBUG JN
+            print(f"DEBUG {__file__}: in make_files_with_id, after third db call, we should see j: {j}", file=sys.stderr)
             childs.append(str(j[0]))
             stack.append(str(j[0]))
     # get all the seqs from the file at once
     for fn in files_ids:
         # DEBUG JN
-        #print(f"DEBUG {__file__}: fn: {fn}", file=sys.stderr)
+        print(f"DEBUG {__file__}: in make_files_with_id, we are iterating over files_ids: fn: {fn}", file=sys.stderr)
         idstoseq = get_seqs_from_gz(gzfileloc, fn, files_ids[fn])
         for tid in idstoseq:
             # DEBUG JN
@@ -178,7 +182,7 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
             if seqstr is None: # too big
                 continue
             # DEBUG JN
-            print(f"DEBUG {__file__}: for tid {tid}, len(seqstr): {len(seqstr)}", file=sys.stderr)
+            print(f"DEBUG {__file__}: in make_files_with_id, for tid {tid}, len(seqstr): {len(seqstr)}", file=sys.stderr)
             if len(seqstr) < smallest_size:
                 continue
             # exclude bad taxa
@@ -198,7 +202,7 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
             seqst = ">"+str(ids_props[tid][3]+"\n"+seqstr)
             # DEBUG JN
             #print(f"DEBUG {__file__}: ids_props[tid][3]: {ids_props[tid][3]}", file=sys.stderr)
-            print(f"DEBUG {__file__}: seqstr: {seqstr}", file=sys.stderr)
+            print(f"DEBUG {__file__}: Are we seeing a seqstr? {seqstr}", file=sys.stderr)
             tblst = "\t".join(ids_props[tid])
             if outfilen is not None and outfile_tbln is not None:
                 if remove_genomes:
@@ -293,7 +297,7 @@ def make_files_with_id_internal(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
     stack = []
     stack.append(str(taxonid))
     # DEBUG JN
-    print(f"DEBUG {__file__}: stack: {stack}", file=sys.stderr)
+    #print(f"DEBUG {__file__}: stack: {stack}", file=sys.stderr)
     while len(stack) > 0:
         id = stack.pop()
         # DEBUG JN
@@ -505,4 +509,4 @@ if __name__ == "__main__":
         sys.exit(1)
     outfilen = sys.argv[3]
     outfile_tbln = sys.argv[3]+".table"
-    make_files_with_id(tid, DB, outfilen, outfile_tbln) #  No value for argument 'gzfileloc' in function call (no-value-for-parameter)!
+    make_files_with_id(tid, DB, outfilen, outfile_tbln)
