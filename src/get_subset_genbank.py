@@ -34,7 +34,7 @@ def clean_name(nm):
 def get_seqs_from_gz(gzdir, filename, idstoget):
     """ JN: New get_seqs_from_gz """
     try:
-        with gzip.open(gzdir+"/"+filename,'rb') as fl:
+        with gzip.open(gzdir+"/"+filename, 'rb') as fl:
             #fl = gzip.open(gzdir+"/"+filename,"r")
             idtoseq = {tid: "" for tid in idstoget}
             current_id = None
@@ -168,6 +168,8 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
             stack.append(str(j[0]))
     # get all the seqs from the file at once
     for fn in files_ids:
+        # DEBUG JN
+        #print(f"DEBUG {__file__}: fn: {fn}")
         idstoseq = get_seqs_from_gz(gzfileloc, fn, files_ids[fn])
         for tid in idstoseq:
             # DEBUG JN
@@ -175,6 +177,8 @@ def make_files_with_id(taxonid, DB, outfilen, outfile_tbln, gzfileloc,
             seqstr = idstoseq[tid]
             if seqstr is None: # too big
                 continue
+            # DEBUG JN
+            #print(f"DEBUG {__file__}: len(seqstr): {len(seqstr)}")
             if len(seqstr) < smallest_size:
                 continue
             # exclude bad taxa
